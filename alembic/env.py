@@ -6,9 +6,10 @@ from config import DB_NAME, DB_USER, DB_HOSTNAME, DB_PASSWORD, DB_PORT
 
 from alembic import context
 
-from src.auth.models import metadata
+from src.auth.models import auth_metadata
+from src.chat.models import chat_metadata
 from src.database import Base
-target_metadata = metadata
+target_metadata = [auth_metadata, chat_metadata]
 # Alembic Config object
 config = context.config
 section = config.config_ini_section

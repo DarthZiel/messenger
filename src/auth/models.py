@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from src.database import SQLALCHEMY_DATABASE_URL, Base
 
-metadata = MetaData()
+auth_metadata = MetaData()
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
