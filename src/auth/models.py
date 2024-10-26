@@ -18,7 +18,9 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     email = Column(String(50), nullable=False, index=True)
     password = Column(String(200), index=True)
     hashed_password = Column(String)
-    messages = relationship("Message", back_populates="user")
+    messages = relationship('Message', back_populates="user")
+    participant_one = relationship('Chat', foreign_keys='Chat.participant_one_id', back_populates='participant_one_id', cascade='all, delete-orphan')
+    participant_two = relationship('Chat', foreign_keys='Chat.participant_two_id', back_populates='participant_two_id', cascade='all, delete-orphan')
 
 
 
