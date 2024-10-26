@@ -4,6 +4,7 @@ from fastapi import Depends
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
 from sqlalchemy import Column, Integer, String, MetaData
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import relationship
 
 from src.database import SQLALCHEMY_DATABASE_URL, Base
 
@@ -17,6 +18,11 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     email = Column(String(50), nullable=False, index=True)
     password = Column(String(200), index=True)
     hashed_password = Column(String)
+    messages = relationship("Message", back_populates="user")
+
+
+
+
 
 
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
