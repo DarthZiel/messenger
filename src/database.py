@@ -16,6 +16,8 @@ SessionLocal = sessionmaker(
     autoflush=False,
     expire_on_commit=False,
 )
+
+
 class Base(DeclarativeBase):
     pass
 

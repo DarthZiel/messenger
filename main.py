@@ -2,7 +2,9 @@ import uuid
 
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
+from starlette.middleware.cors import CORSMiddleware
 
+from src.chat.router import router as chat_router
 from src.auth.schemas import UserRead, UserCreate
 from src.auth.auth import auth_backend
 from src.auth.manager import get_user_manager
@@ -28,3 +30,12 @@ app.include_router(
     prefix="/auth",
     tags=["auth"],
 )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Разрешить запросы с любых доменов
+    allow_credentials=True,  # Разрешить отправку куки
+    allow_methods=["*"],  # Разрешить все HTTP методы (GET, POST, PUT, DELETE и т.д.)
+    allow_headers=["*"],  # Разрешить все заголовки (headers)
+)
+app.include_router(chat_router)
+
