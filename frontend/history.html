@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История Сообщений</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        input[type="date"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .message-history {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #fafafa;
+            padding: 10px;
+        }
+        .message-item {
+            border-bottom: 1px solid #ccc;
+            padding: 5px 0;
+        }
+        .message-item:last-child {
+            border-bottom: none;
+        }
+        .no-messages {
+            text-align: center;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Поиск Истории Сообщений</h2>
+        <input type="date" id="start-date" placeholder="Дата начала" />
+        <input type="date" id="end-date" placeholder="Дата окончания" />
+        <button onclick="fetchMessageHistory()">Поиск</button>
+        <div class="message-history" id="message-history"></div>
+    </div>
+
+    <script>
+        async function fetchMessageHistory() {
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+
+            if (!startDate || !endDate) {
+                alert("Пожалуйста, заполните обе даты.");
+                return;
+            }
+
+            // Извлекаем chat_id из URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const chatId = urlParams.get('chatId');
+
+            if (!chatId) {
+                alert("Chat ID не найден в URL.");
+                return;
+            }
+
+            try {
+                // Запрашиваем историю сообщений по chat_id с параметрами start_date и end_date
+                const historyResponse = await fetch(`http://127.0.0.1:8000/history/${chatId}?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`);
+
+                if (!historyResponse.ok) {
+                    throw new Error("Ошибка при получении истории сообщений. Код ошибки: " + historyResponse.status);
+                }
+
+                const historyData = await historyResponse.json();
+                displayMessageHistory(historyData);
+            } catch (error) {
+                alert("Произошла ошибка: " + error.message);
+                console.error('Ошибка:', error);
+            }
+        }
+
+        function displayMessageHistory(data) {
+            const messageHistoryDiv = document.getElementById('message-history');
+            messageHistoryDiv.innerHTML = ''; // Очищаем предыдущие результаты
+
+            if (data.length === 0) {
+                messageHistoryDiv.innerHTML = '<p class="no-messages">Сообщения не найдены за указанный период.</p>';
+                return;
+            }
+
+            data.forEach(message => {
+                const messageItem = document.createElement('div');
+                messageItem.className = 'message-item';
+                messageItem.textContent = `[${new Date(message.created_at).toLocaleString()}] ${message.email}: ${message.text}`; // Отображаем дату и отправителя
+                messageHistoryDiv.appendChild(messageItem);
+                console.log(message)
+            });
+        }
+        
+    </script>
+</body>
+</html>
